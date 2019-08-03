@@ -1,14 +1,15 @@
+
 .acciones{
   height:200px;
 }
-.acciones>form>input{
+/* .acciones>form>input{
   display:none;
-}
+} */
 
-.svgboton :hover {
+.svgboton:hover {
   fill:blue;
 }
-.svgboton :active {
+.svgboton:active {
   fill:red;
 }
 .procesando {
@@ -53,3 +54,4 @@
     transform: rotate(360deg);
   }
 }
+

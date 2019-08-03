@@ -1,24 +1,67 @@
-
-.acciones{
-  height:200px;
+.acciones {
+  height: 200px;
 }
-.acciones>form>input{
-  display:none;
+
+.acciones>form>input {
+  display: none;
+}
+
+#overlayhold {
+  position: fixed;
+  padding: 0;
+  margin: 0;
+  z-index: 5;
+  top: 0;
+  left: 0;
+  width: 100%;
+
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  -webkit-transition: height 0.5s, background 0.5s;
+  transition: height 0.5s, background 0.5s;
+}
+
+#overlayhold.off {
+  height: 0%;
+  background: rgba(0,0,0,0.0);
+}
+
+svg {
+  height: 100%;
 }
 
 .svgboton:hover {
-  fill:blue;
+  fill: blue;
 }
+
 .svgboton:active {
-  fill:red;
+  fill: red;
 }
-.procesando {
+
+.procesando>svg {
+  fill: magenta;
   animation: procesando 0.2s infinite ease-in-out alternate;
+}
+.error>svg {
+  fill: red;
+  animation: error 0.05s infinite linear alternate;
 }
 
 @keyframes procesando {
-  from{transform: rotate(-30deg);}
-  to{transform: rotate(30deg);}
+  from {
+    transform: rotate(-30deg);
+  }
+  to {
+    transform: rotate(30deg);
+  }
+}
+@keyframes error {
+  from {
+    transform: translateX(3%);
+  }
+  to {
+    transform: rotate(-3%);
+  }
 }
 
 .App {
@@ -54,4 +97,3 @@
     transform: rotate(360deg);
   }
 }
-

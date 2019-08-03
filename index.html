@@ -1,29 +1,99 @@
 <head>
     <link href="/style.css" rel="stylesheet" type="text/css" />
+    <link rel="icon" type="image/x-icon" media="all" href="/favicon.ico" />
+    <script src="/axios.min.js"></script>
     <script>
-        function mandar() {
-            var formdom = document.getElementById('formdom');
-            formdom.submit();
+
+        function mandar(forminput) {
+            var label = null;
+            var labelsArray = Array.from(document.getElementsByTagName("label"));
+            labelsArray.some(element => {
+                if (element.htmlFor === forminput.id) {
+                    label = element;
+                    return true;
+                }
+            });
+            if (label) {
+                label.className += " procesando";
+            }
+
+            var overlayhold = document.getElementById("overlayhold");
+            if(overlayhold){
+                overlayhold.className = "";
+            }
+
+            var formdom = forminput.form;
+
+            var bodyFormData = new FormData();
+            for (var i = 0; i < forminput.files.length; i++) {
+                bodyFormData.append(forminput.name, forminput.files[i]);
+            }
+
+
+            axios({
+                method: 'post',
+                url: formdom.action,
+                data: bodyFormData,
+                config: { headers: { 'Content-Type': 'multipart/form-data' } }
+            })
+                .then((response) => {
+                    //handle success
+                    console.log("bien");
+                    console.log(response);
+                })
+                .catch((response) => {
+                    //handle error
+                    console.log("mal");
+                    console.log(response);
+                    
+                    if (label) {
+                        label.className = label.className.replace(" procesando"," error");
+                        setTimeout(()=>label.className = label.className.replace(" error",""),750);
+                    }
+                })
+                .finally((response) => {
+                    console.log("luego");
+                    console.log(response);
+                    if(overlayhold){
+                        overlayhold.className = "off";
+                    }
+                    if (label) {
+                        label.className = label.className.replace(" procesando","");
+                    }
+                });
         }
     </script>
 </head>
 
 <body>
+    <div id="overlayhold" class="off"></div>
     <div>
         <div class="acciones">
             <label for="subirimagen" class="svgboton">
-                <svg xmlns="http://www.w3.org/2000/svg" height="100%" data-name="Layer 1" viewBox="0 0 100 100" x="0px"
-                    y="0px">
-                    <title>gly by nhy7565</title>
+                <svg xmlns="http://www.w3.org/2000/svg" data-name="Layer 1" viewBox="0 0 100 100" x="0px" y="0px">
+                    <title>cam by nhy7565</title>
                     <path
                         d="M86.72,24.89294H72.38354L67.64,17.58118a6.611,6.611,0,0,0-6.02471-3.88587H38.3847a6.611,6.611,0,0,0-6.02465,3.88587l-4.74353,7.31176H13.28a8.27849,8.27849,0,0,0-8.28,8.28V78.02472a8.27849,8.27849,0,0,0,8.28,8.28H86.72a8.27844,8.27844,0,0,0,8.28-8.28V33.17291A8.27844,8.27844,0,0,0,86.72,24.89294ZM50.00012,74.8985A19.29981,19.29981,0,1,1,69.29993,55.59869,19.3218,19.3218,0,0,1,50.00012,74.8985ZM82.31665,36.67444a.92441.92441,0,0,1-.92438.92438H74.41162a.92437.92437,0,0,1-.92438-.92438V34.2879a.92436.92436,0,0,1,.92438-.92437h6.98065a.9244.9244,0,0,1,.92438.92437Z" />
                     <circle cx="50.00012" cy="55.59869" r="15.7002" />
                 </svg>
             </label>
-            <form action="/upload" id="formdom" method="POST" enctype="multipart/form-data">
-                <input type="file" id="subirimagen" name="imagenes" accept="image/*" capture="capture"
-                    onchange="mandar();" />
-                <input type="submit" />
+            <label for="subirarchivos" class="svgboton">
+                <svg xmlns="http://www.w3.org/2000/svg" data-name="Layer 1" viewBox="0 0 100 100" x="0px" y="0px">
+                    <title>copy by nhy7565</title>
+                    <path
+                        d="M8.98523,28.39935v64.9599A1.6408,1.6408,0,0,0,10.626,95H61.37616a1.64079,1.64079,0,0,0,1.64075-1.64075V47.684H47.38525a5.29948,5.29948,0,0,1-5.29382-5.29382V26.75861H10.626A1.64084,1.64084,0,0,0,8.98523,28.39935Z" />
+                    <path d="M45.65375,42.3894a1.72645,1.72645,0,0,0,1.73083,1.73084H62.98584L45.65375,26.76843Z" />
+                    <path d="M90.9837,22.36194,73.652,5.00977V20.6311a1.72644,1.72644,0,0,0,1.73077,1.73084Z" />
+                    <path
+                        d="M38.62512,5a1.64074,1.64074,0,0,0-1.64074,1.64075V23.16809h10.16L66.617,42.62854V73.24268H89.37408a1.64074,1.64074,0,0,0,1.64069-1.64075V25.92572H75.38348a5.29949,5.29949,0,0,1-5.2937-5.29395V5Z" />
+                </svg>
+            </label>
+            <form action="/upload/cam" method="POST" enctype="multipart/form-data">
+                <input type="file" id="subirimagen" name="cam" accept="image/*" capture="capture"
+                    onchange="mandar(this)" />
+            </form>
+            <form action="/upload/archivos" method="POST" enctype="multipart/form-data">
+                <input type="file" id="subirarchivos" name="archivos" multiple onchange="mandar(this)" />
             </form>
         </div>
     </div>

@@ -2,9 +2,9 @@
 .acciones{
   height:200px;
 }
-/* .acciones>form>input{
+.acciones>form>input{
   display:none;
-} */
+}
 
 .svgboton:hover {
   fill:blue;

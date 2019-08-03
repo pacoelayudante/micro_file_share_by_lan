@@ -1,0 +1,16 @@
+{
+  "name": "img_uploader_express",
+  "version": "0.0.1",
+  "description": "coso muy boludo para subir fotos al server node",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "pacoelayudante",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "multer": "^1.4.2",
+    "nodemon": "^1.19.1"
+  }
+}

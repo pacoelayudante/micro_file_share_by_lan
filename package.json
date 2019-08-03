@@ -1,6 +1,6 @@
 {
   "name": "img_uploader_express",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "coso muy boludo para subir fotos al server node",
   "main": "index.js",
   "scripts": {
@@ -14,5 +14,9 @@
     "express": "^4.17.1",
     "multer": "^1.4.2",
     "nodemon": "^1.19.1"
+  },
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/pacoelayudante/micro_file_share_by_lan.git"
   }
 }

@@ -3,6 +3,61 @@
     <link rel="icon" type="image/x-icon" media="all" href="/favicon.ico" />
     <script src="/axios.min.js"></script>
     <script>
+        function generarGaleria(lista) {
+
+            let galdom = document.getElementById("galeria");
+
+            var imgs = galdom.getElementsByTagName("img");
+            for (var i = imgs.length-1; i >= 0; i--) {
+                galdom.removeChild(imgs[i]);
+            }
+
+            lista.forEach((elemento) => agregarAGaleria(elemento, galdom));
+        }
+        function agregarAGaleria(elemento, galdom) {
+            if (!galdom) galdom = document.getElementById("galeria");
+            let img = document.createElement("img");
+            img.src = elemento;
+            galdom.appendChild(img);
+        }
+
+        function pedirGaleria(label) {
+            if (label) {
+                label.className += " procesando";
+            }
+
+            axios({
+                method: 'get',
+                url: '/galeria/lista'
+            })
+                .then((respuesta) => {
+                    //handle success
+                    console.log("bien");
+                    console.log(respuesta);
+                    let lista = respuesta.data;
+                    generarGaleria(lista);
+                })
+                .catch((respuesta) => {
+                    //handle error
+                    console.log("mal");
+                    console.log(respuesta);
+
+                    if (label) {
+                        label.className = label.className.replace(" procesando", " error");
+                        setTimeout(() => label.className = label.className.replace(" error", ""), 750);
+                    }
+                })
+                .finally((respuesta) => {
+                    console.log("luego");
+                    console.log(respuesta);
+                    if (overlayhold) {
+                        overlayhold.className = "off";
+                    }
+                    if (label) {
+                        label.className = label.className.replace(" procesando", "");
+                    }
+                });
+        }
 
         function mandar(forminput) {
             var label = null;
@@ -18,7 +73,7 @@
             }
 
             var overlayhold = document.getElementById("overlayhold");
-            if(overlayhold){
+            if (overlayhold) {
                 overlayhold.className = "";
             }
 
@@ -40,25 +95,26 @@
                     //handle success
                     console.log("bien");
                     console.log(response);
+                    agregarAGaleria(response.data);
                 })
                 .catch((response) => {
                     //handle error
                     console.log("mal");
                     console.log(response);
-                    
+
                     if (label) {
-                        label.className = label.className.replace(" procesando"," error");
-                        setTimeout(()=>label.className = label.className.replace(" error",""),750);
+                        label.className = label.className.replace(" procesando", " error");
+                        setTimeout(() => label.className = label.className.replace(" error", ""), 750);
                     }
                 })
                 .finally((response) => {
                     console.log("luego");
                     console.log(response);
-                    if(overlayhold){
+                    if (overlayhold) {
                         overlayhold.className = "off";
                     }
                     if (label) {
-                        label.className = label.className.replace(" procesando","");
+                        label.className = label.className.replace(" procesando", "");
                     }
                 });
         }
@@ -68,7 +124,7 @@
 <body>
     <div id="overlayhold" class="off"></div>
     <div>
-        <div class="acciones">
+        <div id="acciones" class="accionesheight">
             <label for="subirimagen" class="svgboton">
                 <svg xmlns="http://www.w3.org/2000/svg" data-name="Layer 1" viewBox="0 0 100 100" x="0px" y="0px">
                     <title>cam by nhy7565</title>
@@ -88,6 +144,17 @@
                         d="M38.62512,5a1.64074,1.64074,0,0,0-1.64074,1.64075V23.16809h10.16L66.617,42.62854V73.24268H89.37408a1.64074,1.64074,0,0,0,1.64069-1.64075V25.92572H75.38348a5.29949,5.29949,0,0,1-5.2937-5.29395V5Z" />
                 </svg>
             </label>
+            <label class="svgboton" onclick="pedirGaleria(this)">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px"
+                    y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100;" xml:space="preserve">
+                    <title>view by besticons13</title>
+                    <g>
+                        <circle cx="49" cy="50" r="13" />
+                        <path
+                            d="M49,27.2c-28.5,0-40.5,22.5-40.5,22.5v0.5c0,0,13,22.5,40.5,22.5c28.5,0,40.5-22.5,40.5-22.5v-0.5   C89.5,49.8,76.5,27.2,49,27.2z M49,67c-9.4,0-17-7.6-17-17s7.6-17,17-17s17,7.6,17,17S58.4,67,49,67z" />
+                    </g>
+                </svg>
+            </label>
             <form action="/upload/cam" method="POST" enctype="multipart/form-data">
                 <input type="file" id="subirimagen" name="cam" accept="image/*" capture="capture"
                     onchange="mandar(this)" />
@@ -95,6 +162,9 @@
             <form action="/upload/archivos" method="POST" enctype="multipart/form-data">
                 <input type="file" id="subirarchivos" name="archivos" multiple onchange="mandar(this)" />
             </form>
+        </div>
+        <div id="galeria">
+            <div class="accionesheight"></div>
         </div>
     </div>
 </body>

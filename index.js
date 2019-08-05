@@ -4,8 +4,12 @@ const os = require('os');
 const fs = require('fs')
 
 const mimesAceptados = [
-    'image/jpeg','image/bmp','image/gif','image/png','image/tiff'
+    'image/jpeg', 'image/bmp', 'image/gif', 'image/png', 'image/tiff'
 ]
+const extImagenes = [
+    'jpeg', 'jpg', 'bmp', 'gif', 'png', 'tiff'
+]
+const galStaticDir = '/galeria'
 
 const nombresDirs = {
     'cam': __dirname + '/uploads/cam',
@@ -33,7 +37,7 @@ var storage = multer.diskStorage({
 const upload = multer({
     storage: storage,
     fileFilter: function (req, file, callback) {
-        if (file.fieldname==='cam' && !mimesAceptados.some((e)=>e===file.mimetype)) {
+        if (file.fieldname === 'cam' && !mimesAceptados.some((e) => e === file.mimetype)) {
             return callback(null, false, new Error('Only images are allowed'))
         }
         callback(null, true)
@@ -42,6 +46,7 @@ const upload = multer({
 
 const app = express()
 app.use(express.static('cosas'))
+app.use(galStaticDir, express.static('uploads/cam'))
 
 app.post('/upload/cam', upload.array('cam'), (req, res, next) => {
     console.log("recibiendo ... file?" + req.file + " or files?" + req.files);
@@ -51,7 +56,7 @@ app.post('/upload/cam', upload.array('cam'), (req, res, next) => {
         res.status(400).send(error)
         return next(error)
     }
-    res.send(req.file);
+    res.send(galStaticDir+'/'+req.file.filename);
 })
 app.post('/upload/archivos', upload.array('archivos'), (req, res, next) => {
     console.log("recibiendo ... file?" + req.file + " or files?" + req.files);
@@ -67,6 +72,17 @@ app.get('/upload/cam', (req, res, next) => {
 })
 app.get('/upload/archivos', (req, res, next) => {
     res.send("usar post");
+})
+
+app.get('/galeria/lista', (req, res) => {
+    var lista = []
+    fs.readdirSync(nombresDirs['cam']).forEach(file => {
+        let ext = file.slice((file.lastIndexOf('.') - 1 >>> 0) + 2)
+        if (extImagenes.some((e) => e === ext)) lista.push(galStaticDir+'/'+file)
+    });
+    console.log('lista de la galeria compilada')
+    console.log(lista)
+    res.json(lista)
 })
 
 app.get('/', (req, res, cp) => {

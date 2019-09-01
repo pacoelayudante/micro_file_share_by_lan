@@ -1,7 +1,8 @@
 const express = require('express')
 const multer = require('multer')
-const os = require('os');
+const os = require('os')
 const fs = require('fs')
+var qrcode = require('qrcode-terminal')
 
 const mimesAceptados = [
     'image/jpeg', 'image/bmp', 'image/gif', 'image/png', 'image/tiff'
@@ -74,6 +75,47 @@ app.get('/upload/archivos', (req, res, next) => {
     res.send("usar post");
 })
 
+app.get('/archivos',(req,res)=>{res.send('las opciones son:</br>'+
+'<a href="./ultimo">/archivos/ultimo</a><br/>'+
+'<a href="./lista">/archivos/lista</a>')})
+app.get('/archivos/ultimo', (req, res)=>{
+    let lista = fs.readdirSync(nombresDirs['archivos']);
+    lista = lista.sort((a,b)=>{
+        let statsA = fs.statSync(nombresDirs['archivos']+'/'+a);
+        let statsB = fs.statSync(nombresDirs['archivos']+'/'+b);
+        return statsA.ctime - statsB.ctime;
+    });
+    res.sendFile(nombresDirs['archivos']+'/'+lista.pop());
+})
+app.get('/archivos/lista', (req, res) => {
+    var lista = '---<br/>';
+    fs.readdirSync(nombresDirs['archivos']).forEach(file => {
+        lista += '<a href="./'+file+'">'+file+'</a><br/>';
+        // let ext = file.slice((file.lastIndexOf('.') - 1 >>> 0) + 2)
+        // if (extImagenes.some((e) => e === ext)) lista.push(galStaticDir+'/'+file)
+    });
+    console.log('lista de archivos compilada')
+    console.log(lista)
+    res.send(lista)
+})
+app.get('/archivos/:file', (req, res)=>{
+    res.sendFile(nombresDirs['archivos']+'/'+req.params.file);
+})
+
+app.get('/galeria',(req,res)=>{res.send('las opciones son:</br>'+
+'<a href="./ultima">/galeria/ultima</a><br/>'+
+'<a href="./lista">/galeria/lista</a>')})
+
+app.get('/galeria/ultimo',(req,res)=>{res.send('probabablemente estas queriendo apuntar a <a href="./ultima">/galeria/ultima</a>')})
+app.get('/galeria/ultima', (req, res)=>{
+    let lista = fs.readdirSync(nombresDirs['cam']);
+    lista = lista.sort((a,b)=>{
+        let statsA = fs.statSync(nombresDirs['cam']+'/'+a);
+        let statsB = fs.statSync(nombresDirs['cam']+'/'+b);
+        return statsA.ctime - statsB.ctime;
+    });
+    res.sendFile(nombresDirs['cam']+'/'+lista.pop());
+})
 app.get('/galeria/lista', (req, res) => {
     var lista = []
     fs.readdirSync(nombresDirs['cam']).forEach(file => {
@@ -98,6 +140,7 @@ var listener = app.listen(3005, function () {
             if (address.family === 'IPv4' && !address.internal) {
                 addresses.push(address.address);
                 console.log('Listening on ' + address.address + ':' + listener.address().port);
+                qrcode.generate('http://'+address.address + ':' + listener.address().port);
             }
         }
     }
